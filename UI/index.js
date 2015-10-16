@@ -7,22 +7,27 @@ $(function () {
     }
 
     function AppViewModel() {
+        this.newProduct = ko.observable(new ProductViewModel({}));
         this.products = ko.observableArray();
         var self = this;
 
         this.add = function(product){
-            $.post(
-            '/products',
-            {
-              album : product.album(),
-              price : product.price(),
-              interpret : product.interpret()
-            },
-            function(id){
+            $.ajax(
+              '/products',
+              {
+                method: "POST",
+                data: {
+                  album : product.album(),
+                  price : product.price(),
+                  interpret : product.interpret()
+                }
+              }
+            ).done(id => {
               product.id = id;
               self.products.push(product);
               self.newProduct(new ProductViewModel({}));
-            })
+            }).
+            fail(() => console.log("Error (Add)"));
         };
 
         this.save = function(product){
@@ -35,7 +40,7 @@ $(function () {
                 price : product.price(),
                 interpret : product.interpret()
               }
-            });
+            }).fail(() => console.log("Error (Save)"));
         };
 
         this.remove = function(product){
@@ -44,10 +49,9 @@ $(function () {
             {
               method : 'DELETE'
             }
-          ).done(() => self.products.remove(product));
-
+          ).done(() => self.products.remove(product)).
+          fail(() => console.log("Error (Remove)"));
         };
-        this.newProduct = ko.observable(new ProductViewModel({}));
     }
 
     var appViewModel = new AppViewModel();

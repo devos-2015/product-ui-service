@@ -4,11 +4,28 @@ var sdk = require('lc-sdk-node.js');
 
 var client = sdk({
   discoveryServers : [
-    '46.101.245.190:8500',
-    '46.101.132.55:8500',
-    '46.101.193.82:8500'
+      '46.101.245.190:8500',
+      '46.101.132.55:8500',
+      '46.101.193.82:8500'
     ]
 });
+
+var initialized = process.env.DEBUG ? true : false;
+
+var products = process.env.DEBUG ?[
+  {
+      price : -1,
+      interpret : "Wolle",
+      album : "Karaoke Fun",
+      id : 1
+  },
+  {
+      price : 3.99,
+      interpret : "foo fighters",
+      album : "sonic highway",
+      id : 2
+  }
+] :[];
 
 var SERVICE_CHECK_HTTP = process.env.SERVICE_CHECK_HTTP || '/healthcheck';
 var PORT = process.env.PORT || 3000;
@@ -32,20 +49,37 @@ app.get('/UI/index.js', restify.serveStatic({
 }));
 
 app.get('/products', function (req, res, next) {
-  client.get('product-service', '/Products').then(data => res.send(200, data).);
+    res.send(products);
 });
 
 app.del('/products/:id', function(req, res, next){
-  client.del('product-service','/Products' + req.params.id);
-})
+  client.del('product-service','/Products' + req.params.id).
+    catch(() => res.send(500, {message : "Backend not reachable for DELETE"}));;
+});
 
 app.put('/products/:id', function(req, res, next){
-  client.put('product-service', '/Products'+ req.params.id ,request.body);
-})
+  client.put('product-service', '/Products'+ req.params.id ,request.body).
+    catch(() => res.send(500, {message : "Backend not reachable for PUT"}));
+});
 
 app.post('/products', function(req, res, next){
-  client.put('product-service', '/Products',request.body).then(data => res.send(201, data));
-})
+  client.put('product-service', '/Products',request.body).
+    then(data => res.send(201, data)).
+    catch(() => res.send(500, {message : "Backend not reachable for POST"}));
+});
 
-
-app.listen(PORT || 3000);
+if(process.env.DEBUG){
+  app.listen(PORT);
+}
+else{
+  setInterval(function(){
+    client.get('product-service', '/Products').then(data => {
+      console.log("Products synced.", data);
+      products = data || [];
+      if(!initialized && data.length > 0){
+        initialized = true;
+        app.listen(PORT);
+      }
+    }).catch(() => console.log("Sync failed."));
+  },10000);
+}
