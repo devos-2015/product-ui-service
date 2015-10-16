@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type='text/javascript' src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js'></script>
+    <script type='text/javascript' src="/UI/index.js"></script>
+</head>
+<body>
+<ul data-bind="foreach: products">
+    <li>
+        <input data-bind="value:interpret">
+        <input data-bind="value:preis">
+        <input data-bind="value:album">
+        <button data-bind="click:$parent.save"> save</button>
+        <button data-bind="click:$parent.remove"> remove</button>
+    </li>
+</ul>
+<div data-bind="with:newProduct">
+    <input data-bind="value:interpret">
+    <input data-bind="value:preis">
+    <input data-bind="value:album">
+    <button data-bind="click:$parent.add"> save</button>
+    <button data-bind="click:$parent.remove"> remove</button>
+</div>
+</body>
+</html>
