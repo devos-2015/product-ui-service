@@ -11,18 +11,17 @@
 <ul data-bind="foreach: products">
     <li>
         <input data-bind="value:interpret">
-        <input data-bind="value:preis">
         <input data-bind="value:album">
+        <input data-bind="value:price">
         <button data-bind="click:$parent.save"> save</button>
         <button data-bind="click:$parent.remove"> remove</button>
     </li>
 </ul>
 <div data-bind="with:newProduct">
     <input data-bind="value:interpret">
-    <input data-bind="value:preis">
     <input data-bind="value:album">
+    <input data-bind="value:price">
     <button data-bind="click:$parent.add"> save</button>
-    <button data-bind="click:$parent.remove"> remove</button>
 </div>
 </body>
 </html>

@@ -10,6 +10,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "lc-sdk-node.js": "0.0.2",
     "restify": "^4.0.3"
   },
   "devDependencies": {
